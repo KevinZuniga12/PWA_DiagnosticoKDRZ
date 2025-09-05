@@ -8,62 +8,87 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .pokemon-img {
-            width: 100px;
-            height: 100px;
+            width: 110px;
+            height: 110px;
             object-fit: contain;
-            margin: 0 auto;
+            margin: 0 auto 0.5rem auto;
             display: block;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
+            transition: transform 0.2s;
         }
-
+        .pokemon-img:hover {
+            transform: scale(1.08) rotate(-3deg);
+        }
         .flip-card {
             background-color: transparent;
             width: 100%;
-            height: 180px;
-            perspective: 1000px;
-            margin-bottom: 1rem;
+            max-width: 220px;
+            height: 270px;
+            perspective: 1200px;
+            margin: 0 auto 1.5rem auto;
+            cursor: pointer;
         }
-
         .flip-card-inner {
             position: relative;
             width: 100%;
             height: 100%;
-            transition: transform 0.6s;
+            transition: transform 0.8s ease-in-out;
             transform-style: preserve-3d;
         }
-
         .flip-card.flipped .flip-card-inner {
             transform: rotateY(180deg);
         }
-
         .flip-card-front,
         .flip-card-back {
             position: absolute;
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: .5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 0.5rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.08);
+            transition: box-shadow 0.3s ease;
         }
-
+        .flip-card:hover .flip-card-front,
+        .flip-card:hover .flip-card-back {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.10);
+        }
         .flip-card-front {
-            background: #fff;
+            background: linear-gradient(135deg, #fff 70%, #e3f0ff 100%);
         }
-
         .flip-card-back {
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f8f9fa 70%, #d1e7ff 100%);
             transform: rotateY(180deg);
-            padding: 1rem;
-            font-size: .95rem;
+            font-size: 1rem;
         }
-
+        .flip-card-back img {
+            margin-bottom: 0.5rem;
+        }
+        .flip-card .btn {
+            min-width: 80px;
+        }
+        .card-body span {
+            font-weight: 600;
+            font-size: 1.08rem;
+            letter-spacing: 0.5px;
+        }
+        .flip-card-back small {
+            display: block;
+            margin-bottom: 0.2rem;
+            color: #555;
+        }
         @media (max-width: 576px) {
             .col-6 {
                 flex: 0 0 100%;
                 max-width: 100%;
             }
-
             .flip-card {
-                height: 200px;
+                width: 100%;
+                height: 220px;
             }
         }
     </style>
@@ -107,7 +132,6 @@
                                 <img src="${imgUrl}" alt="${pokemon.name}" class="pokemon-img mt-2">
                                 <div class="card-body p-2 text-center">
                                     <span>${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}</span>
-                                    <button class="btn btn-sm btn-outline-primary mt-2 ver-mas">Ver más</button>
                                 </div>
                             </div>
                             <div class="flip-card-back d-flex flex-column justify-content-center align-items-center">
@@ -116,42 +140,27 @@
                         </div>
                     </div>
                 `;
-                // Flip logic
                 const flipCard = col.querySelector('.flip-card');
                 const flipInner = col.querySelector('.flip-card-inner');
-                const verMasBtn = col.querySelector('.ver-mas');
-                verMasBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    flipCard.classList.add('flipped');
-                    traerDetallesPokemon(pokemon.url)
-                        .then(data => {
-                            const tipos = data.types.map(t => t.type.name).join(', ');
-                            const stats = data.stats.map(s => `<li>${s.stat.name}: <strong>${s.base_stat}</strong></li>`).join('');
-                            flipInner.querySelector('.flip-card-back').innerHTML = `
-                                <img src="${data.sprites.front_default}" alt="${data.name}" class="pokemon-img mb-2">
-                                <strong>${data.name.charAt(0).toUpperCase() + data.name.slice(1)}</strong>
-                                <small>ID: ${data.id} | Altura: ${data.height} | Peso: ${data.weight}</small>
-                                <small>Tipos: ${tipos}</small>
-                                <button class="btn btn-sm btn-outline-secondary mt-2 volver">Volver</button>
-                            `;
-                            flipInner.querySelector('.volver').onclick = (ev) => {
-                                ev.stopPropagation();
-                                flipCard.classList.remove('flipped');
-                            };
-                        })
-                        .catch(() => {
-                            flipInner.querySelector('.flip-card-back').innerHTML =
-                                `<div class="alert alert-danger">No se pudo cargar la información.</div>
-                                 <button class="btn btn-sm btn-outline-secondary mt-2 volver">Volver</button>`;
-                            flipInner.querySelector('.volver').onclick = (ev) => {
-                                ev.stopPropagation();
-                                flipCard.classList.remove('flipped');
-                            };
-                        });
-                };
-                // Flip back on card click (back side)
+                // Flip on card click (front side)
                 flipCard.addEventListener('click', function (e) {
-                    if (flipCard.classList.contains('flipped')) {
+                    if (!flipCard.classList.contains('flipped')) {
+                        flipCard.classList.add('flipped');
+                        traerDetallesPokemon(pokemon.url)
+                            .then(data => {
+                                const tipos = data.types.map(t => t.type.name).join(', ');
+                                flipInner.querySelector('.flip-card-back').innerHTML = `
+                                    <img src="${data.sprites.front_default}" alt="${data.name}" class="pokemon-img mb-2">
+                                    <strong>${data.name.charAt(0).toUpperCase() + data.name.slice(1)}</strong>
+                                    <small>ID: ${data.id} | Altura: ${data.height} | Peso: ${data.weight}</small>
+                                    <small>Tipos: ${tipos}</small>
+                                `;
+                            })
+                            .catch(() => {
+                                flipInner.querySelector('.flip-card-back').innerHTML =
+                                    `<div class="alert alert-danger">No se pudo cargar la información.</div>`;
+                            });
+                    } else {
                         flipCard.classList.remove('flipped');
                     }
                 });
@@ -162,25 +171,31 @@
         function mostrarPaginacion() {
             const paginacion = document.getElementById('pagination');
             paginacion.innerHTML = '';
+            
+            // Botón anterior
             const anterior = document.createElement('li');
             anterior.className = `page-item${paginaActual === 1 ? ' disabled' : ''}`;
-            anterior.innerHTML = `<a class="page-link" href="#">«</a>`;
-            anterior.onclick = e => { e.preventDefault(); if (paginaActual > 1) irAPagina(paginaActual - 1); };
+            anterior.innerHTML = `<a class="page-link" href="#" title="Página anterior">‹ Anterior</a>`;
+            anterior.onclick = e => { 
+                e.preventDefault(); 
+                if (paginaActual > 1) irAPagina(paginaActual - 1); 
+            };
             paginacion.appendChild(anterior);
 
-            for (let i = 1; i <= totalPaginas; i++) {
-                if (i > 3 && i < totalPaginas - 2 && Math.abs(i - paginaActual) > 1) continue;
-                const li = document.createElement('li');
-                li.className = `page-item${i === paginaActual ? ' active' : ''}`;
-                li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-                li.onclick = e => { e.preventDefault(); irAPagina(i); };
-                paginacion.appendChild(li);
-            }
+            // Información de página actual
+            const infoPage = document.createElement('li');
+            infoPage.className = 'page-item active';
+            infoPage.innerHTML = `<span class="page-link bg-primary border-primary">Página ${paginaActual} de ${totalPaginas}</span>`;
+            paginacion.appendChild(infoPage);
 
+            // Botón siguiente
             const siguiente = document.createElement('li');
             siguiente.className = `page-item${paginaActual === totalPaginas ? ' disabled' : ''}`;
-            siguiente.innerHTML = `<a class="page-link" href="#">»</a>`;
-            siguiente.onclick = e => { e.preventDefault(); if (paginaActual < totalPaginas) irAPagina(paginaActual + 1); };
+            siguiente.innerHTML = `<a class="page-link" href="#" title="Página siguiente">Siguiente ›</a>`;
+            siguiente.onclick = e => { 
+                e.preventDefault(); 
+                if (paginaActual < totalPaginas) irAPagina(paginaActual + 1); 
+            };
             paginacion.appendChild(siguiente);
         }
 
