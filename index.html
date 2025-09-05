@@ -142,20 +142,21 @@
                 `;
                 const flipCard = col.querySelector('.flip-card');
                 const flipInner = col.querySelector('.flip-card-inner');
-                // Flip on card click (front side)
                 flipCard.addEventListener('click', function (e) {
                     if (!flipCard.classList.contains('flipped')) {
                         flipCard.classList.add('flipped');
                         traerDetallesPokemon(pokemon.url)
                             .then(data => {
                                 const tipos = data.types.map(t => t.type.name).join(', ');
+                                const alturaEnMetros = (data.height / 10).toFixed(1);
+                                const pesoEnKg = (data.weight / 10).toFixed(1);
+                                
                                 flipInner.querySelector('.flip-card-back').innerHTML = `
                                     <img src="${data.sprites.front_default}" alt="${data.name}" class="pokemon-img mb-2">
                                     <strong>${data.name.charAt(0).toUpperCase() + data.name.slice(1)}</strong>
-                                    <small>ID: ${data.id} <br>
-                                            Altura: ${data.height} cm <br>
-                                            Peso: ${data.weight} kg
-                                    </small>
+                                    <small>ID: ${data.id}</small>
+                                    <small>Altura: ${alturaEnMetros} m</small>
+                                    <small>Peso: ${pesoEnKg} kg</small>
                                     <small>Tipos: ${tipos}</small>
                                 `;
                             })
@@ -175,7 +176,6 @@
             const paginacion = document.getElementById('pagination');
             paginacion.innerHTML = '';
             
-            // Botón anterior
             const anterior = document.createElement('li');
             anterior.className = `page-item${paginaActual === 1 ? ' disabled' : ''}`;
             anterior.innerHTML = `<a class="page-link" href="#" title="Página anterior">‹ Anterior</a>`;
@@ -185,13 +185,11 @@
             };
             paginacion.appendChild(anterior);
 
-            // Información de página actual
             const infoPage = document.createElement('li');
             infoPage.className = 'page-item active';
             infoPage.innerHTML = `<span class="page-link bg-primary border-primary">Página ${paginaActual} de ${totalPaginas}</span>`;
             paginacion.appendChild(infoPage);
 
-            // Botón siguiente
             const siguiente = document.createElement('li');
             siguiente.className = `page-item${paginaActual === totalPaginas ? ' disabled' : ''}`;
             siguiente.innerHTML = `<a class="page-link" href="#" title="Página siguiente">Siguiente ›</a>`;
