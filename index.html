@@ -152,7 +152,10 @@
                                 flipInner.querySelector('.flip-card-back').innerHTML = `
                                     <img src="${data.sprites.front_default}" alt="${data.name}" class="pokemon-img mb-2">
                                     <strong>${data.name.charAt(0).toUpperCase() + data.name.slice(1)}</strong>
-                                    <small>ID: ${data.id} | Altura: ${data.height} | Peso: ${data.weight}</small>
+                                    <small>ID: ${data.id} <br>
+                                            Altura: ${data.height} cm <br>
+                                            Peso: ${data.weight} kg
+                                    </small>
                                     <small>Tipos: ${tipos}</small>
                                 `;
                             })
