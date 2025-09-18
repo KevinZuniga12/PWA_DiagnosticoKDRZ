@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Fácil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .pokemon-img {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            margin: 0 auto 0.5rem auto;
+            display: block;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
+            transition: transform 0.2s;
+        }
+        .pokemon-img:hover {
+            transform: scale(1.08) rotate(-3deg);
+        }
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            max-width: 220px;
+            height: 270px;
+            perspective: 1200px;
+            margin: 0 auto 1.5rem auto;
+            cursor: pointer;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s ease-in-out;
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 0.5rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.08);
+            transition: box-shadow 0.3s ease;
+        }
+        .flip-card:hover .flip-card-front,
+        .flip-card:hover .flip-card-back {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.10);
+        }
+        .flip-card-front {
+            background: linear-gradient(135deg, #fff 70%, #e3f0ff 100%);
+        }
+        .flip-card-back {
+            background: linear-gradient(135deg, #f8f9fa 70%, #d1e7ff 100%);
+            transform: rotateY(180deg);
+            font-size: 1rem;
+        }
+        .flip-card-back img {
+            margin-bottom: 0.5rem;
+        }
+        .flip-card .btn {
+            min-width: 80px;
+        }
+        .card-body span {
+            font-weight: 600;
+            font-size: 1.08rem;
+            letter-spacing: 0.5px;
+        }
+        .flip-card-back small {
+            display: block;
+            margin-bottom: 0.2rem;
+            color: #555;
+        }
+        @media (max-width: 576px) {
+            .col-6 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+            .flip-card {
+                width: 100%;
+                height: 220px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-3 text-center">Lista de Pokémon</h2>
+        <nav>
+            <ul class="pagination justify-content-center" id="pagination"></ul>
+        </nav>
+        <div id="pokemon-list" class="row gy-3"></div>
+        <div id="pokemon-details" class="mt-3"></div>
+    </div>
+    <script>
+        const cuantosPorPagina = 20;
+        let paginaActual = 1, totalPaginas = 0;
+
+        function traerPokemones(pagina = 1) {
+            const desde = (pagina - 1) * cuantosPorPagina;
+            return fetch(`https://pokeapi.co/api/v2/pokemon?limit=${cuantosPorPagina}&offset=${desde}`)
+                .then(r => r.json());
+        }
+
+        function traerDetallesPokemon(url) {
+            return fetch(url).then(r => r.json());
+        }
+
+        function mostrarPokemones(pokemones) {
+            const lista = document.getElementById('pokemon-list');
+            lista.innerHTML = '';
+            pokemones.forEach(pokemon => {
+                const id = pokemon.url.split('/').filter(Boolean).pop();
+                const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+                const col = document.createElement('div');
+                col.className = 'col-6 col-md-3 d-flex justify-content-center';
+                col.innerHTML = `
+                    <div class="flip-card" tabindex="0">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front d-flex flex-column align-items-center justify-content-center">
+                                <img src="${imgUrl}" alt="${pokemon.name}" class="pokemon-img mt-2">
+                                <div class="card-body p-2 text-center">
+                                    <span>${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}</span>
+                                </div>
+                            </div>
+                            <div class="flip-card-back d-flex flex-column justify-content-center align-items-center">
+                                <span class="spinner-border text-primary" role="status"></span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                const flipCard = col.querySelector('.flip-card');
+                const flipInner = col.querySelector('.flip-card-inner');
+                flipCard.addEventListener('click', function (e) {
+                    if (!flipCard.classList.contains('flipped')) {
+                        flipCard.classList.add('flipped');
+                        traerDetallesPokemon(pokemon.url)
+                            .then(data => {
+                                const tipos = data.types.map(t => t.type.name).join(', ');
+                                const alturaEnMetros = (data.height / 10).toFixed(1);
+                                const pesoEnKg = (data.weight / 10).toFixed(1);
+                                
+                                flipInner.querySelector('.flip-card-back').innerHTML = `
+                                    <img src="${data.sprites.front_default}" alt="${data.name}" class="pokemon-img mb-2">
+                                    <strong>${data.name.charAt(0).toUpperCase() + data.name.slice(1)}</strong>
+                                    <small>ID: ${data.id}</small>
+                                    <small>Altura: ${alturaEnMetros} m</small>
+                                    <small>Peso: ${pesoEnKg} kg</small>
+                                    <small>Tipos: ${tipos}</small>
+                                `;
+                            })
+                            .catch(() => {
+                                flipInner.querySelector('.flip-card-back').innerHTML =
+                                    `<div class="alert alert-danger">No se pudo cargar la información.</div>`;
+                            });
+                    } else {
+                        flipCard.classList.remove('flipped');
+                    }
+                });
+                lista.appendChild(col);
+            });
+        }
+
+        function mostrarPaginacion() {
+            const paginacion = document.getElementById('pagination');
+            paginacion.innerHTML = '';
+            
+            const anterior = document.createElement('li');
+            anterior.className = `page-item${paginaActual === 1 ? ' disabled' : ''}`;
+            anterior.innerHTML = `<a class="page-link" href="#" title="Página anterior">‹ Anterior</a>`;
+            anterior.onclick = e => { 
+                e.preventDefault(); 
+                if (paginaActual > 1) irAPagina(paginaActual - 1); 
+            };
+            paginacion.appendChild(anterior);
+
+            const infoPage = document.createElement('li');
+            infoPage.className = 'page-item active';
+            infoPage.innerHTML = `<span class="page-link bg-primary border-primary">Página ${paginaActual} de ${totalPaginas}</span>`;
+            paginacion.appendChild(infoPage);
+
+            const siguiente = document.createElement('li');
+            siguiente.className = `page-item${paginaActual === totalPaginas ? ' disabled' : ''}`;
+            siguiente.innerHTML = `<a class="page-link" href="#" title="Página siguiente">Siguiente ›</a>`;
+            siguiente.onclick = e => { 
+                e.preventDefault(); 
+                if (paginaActual < totalPaginas) irAPagina(paginaActual + 1); 
+            };
+            paginacion.appendChild(siguiente);
+        }
+
+        function irAPagina(pagina) {
+            paginaActual = pagina;
+            traerPokemones(pagina)
+                .then(data => {
+                    mostrarPokemones(data.results);
+                    mostrarPaginacion();
+                    document.getElementById('pokemon-details').innerHTML = '';
+                });
+        }
+
+        traerPokemones(1).then(data => {
+            totalPaginas = Math.ceil(data.count / cuantosPorPagina);
+            mostrarPokemones(data.results);
+            mostrarPaginacion();
+        });
+    </script>
+</body>
+
+</html>

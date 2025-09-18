@@ -1,221 +1,185 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokémon Fácil</title>
+    <title>Portfolio - Kevin Zúñiga</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        .pokemon-img {
-            width: 110px;
-            height: 110px;
-            object-fit: contain;
-            margin: 0 auto 0.5rem auto;
-            display: block;
-            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
-            transition: transform 0.2s;
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .pokemon-img:hover {
-            transform: scale(1.08) rotate(-3deg);
+        .hero-section {
+            padding: 80px 0;
+            text-align: center;
+            color: white;
         }
-        .flip-card {
-            background-color: transparent;
-            width: 100%;
-            max-width: 220px;
-            height: 270px;
-            perspective: 1200px;
-            margin: 0 auto 1.5rem auto;
-            cursor: pointer;
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        .flip-card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.8s ease-in-out;
-            transform-style: preserve-3d;
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
         }
-        .flip-card.flipped .flip-card-inner {
-            transform: rotateY(180deg);
+        .projects-section {
+            padding: 60px 0;
         }
-        .flip-card-front,
-        .flip-card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem 0.5rem;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.08);
-            transition: box-shadow 0.3s ease;
+        .project-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: none;
         }
-        .flip-card:hover .flip-card-front,
-        .flip-card:hover .flip-card-back {
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.10);
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
-        .flip-card-front {
-            background: linear-gradient(135deg, #fff 70%, #e3f0ff 100%);
+        .project-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        .flip-card-back {
-            background: linear-gradient(135deg, #f8f9fa 70%, #d1e7ff 100%);
-            transform: rotateY(180deg);
-            font-size: 1rem;
+        .project-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
         }
-        .flip-card-back img {
-            margin-bottom: 0.5rem;
+        .project-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
         }
-        .flip-card .btn {
-            min-width: 80px;
-        }
-        .card-body span {
+        .btn-project {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            color: white;
             font-weight: 600;
-            font-size: 1.08rem;
-            letter-spacing: 0.5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
         }
-        .flip-card-back small {
-            display: block;
-            margin-bottom: 0.2rem;
-            color: #555;
+        .btn-project:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            color: white;
         }
-        @media (max-width: 576px) {
-            .col-6 {
-                flex: 0 0 100%;
-                max-width: 100%;
-            }
-            .flip-card {
-                width: 100%;
-                height: 220px;
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: white;
+            opacity: 0.8;
+        }
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
             }
         }
     </style>
 </head>
-
 <body>
-    <div class="container mt-4">
-        <h2 class="mb-3 text-center">Lista de Pokémon</h2>
-        <nav>
-            <ul class="pagination justify-content-center" id="pagination"></ul>
-        </nav>
-        <div id="pokemon-list" class="row gy-3"></div>
-        <div id="pokemon-details" class="mt-3"></div>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">
+                <i class="fas fa-code me-3"></i>Kevin Zúñiga
+            </h1>
+            <p class="hero-subtitle">Desarrollador Web | Proyectos Universitarios</p>
+            <p class="lead">Bienvenido a mi portfolio de proyectos del diagnóstico</p>
+        </div>
     </div>
-    <script>
-        const cuantosPorPagina = 20;
-        let paginaActual = 1, totalPaginas = 0;
 
-        function traerPokemones(pagina = 1) {
-            const desde = (pagina - 1) * cuantosPorPagina;
-            return fetch(`https://pokeapi.co/api/v2/pokemon?limit=${cuantosPorPagina}&offset=${desde}`)
-                .then(r => r.json());
-        }
+    <!-- Projects Section -->
+    <div class="projects-section">
+        <div class="container">
+            <div class="row">
+                <!-- Proyecto Pokémon -->
+                <div class="col-lg-6 col-md-12">
+                    <div class="project-card text-center">
+                        <div class="project-icon">
+                            <i class="fas fa-dragon"></i>
+                        </div>
+                        <h3 class="project-title">Pokédex Interactiva</h3>
+                        <p class="project-description">
+                            Una aplicación web moderna que muestra información detallada de Pokémon con tarjetas interactivas, efectos flip y navegación por páginas. Construida con HTML5, CSS3 y JavaScript vanilla.
+                        </p>
+                        <a href="index.html" class="btn-project">
+                            <i class="fas fa-eye me-2"></i>Ver Proyecto
+                        </a>
+                    </div>
+                </div>
 
-        function traerDetallesPokemon(url) {
-            return fetch(url).then(r => r.json());
-        }
+                <!-- Proyecto Callback -->
+                <div class="col-lg-6 col-md-12">
+                    <div class="project-card text-center">
+                        <div class="project-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <h3 class="project-title">Callbacks Demo</h3>
+                        <p class="project-description">
+                            Demostración práctica de callbacks en JavaScript, mostrando conceptos de programación asíncrona y manejo de eventos. Incluye ejemplos interactivos y explicaciones detalladas.
+                        </p>
+                        <a href="Callback.html" class="btn-project">
+                            <i class="fas fa-eye me-2"></i>Ver Proyecto
+                        </a>
+                    </div>
+                </div>
+            </div>
 
-        function mostrarPokemones(pokemones) {
-            const lista = document.getElementById('pokemon-list');
-            lista.innerHTML = '';
-            pokemones.forEach(pokemon => {
-                const id = pokemon.url.split('/').filter(Boolean).pop();
-                const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
-                const col = document.createElement('div');
-                col.className = 'col-6 col-md-3 d-flex justify-content-center';
-                col.innerHTML = `
-                    <div class="flip-card" tabindex="0">
-                        <div class="flip-card-inner">
-                            <div class="flip-card-front d-flex flex-column align-items-center justify-content-center">
-                                <img src="${imgUrl}" alt="${pokemon.name}" class="pokemon-img mt-2">
-                                <div class="card-body p-2 text-center">
-                                    <span>${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}</span>
-                                </div>
+            <!-- Información adicional -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="project-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h4 class="text-primary">
+                                    <i class="fas fa-info-circle me-2"></i>Sobre estos proyectos
+                                </h4>
+                                <p class="mb-0">
+                                    Estos proyectos forman parte del diagnóstico académico del 10mo cuatrimestre. 
+                                    Cada uno demuestra diferentes aspectos del desarrollo web moderno, desde el 
+                                    consumo de APIs hasta la implementación de interfaces interactivas.
+                                </p>
                             </div>
-                            <div class="flip-card-back d-flex flex-column justify-content-center align-items-center">
-                                <span class="spinner-border text-primary" role="status"></span>
+                            <div class="col-md-4 text-center">
+                                <i class="fas fa-graduation-cap" style="font-size: 4rem; color: #667eea;"></i>
                             </div>
                         </div>
                     </div>
-                `;
-                const flipCard = col.querySelector('.flip-card');
-                const flipInner = col.querySelector('.flip-card-inner');
-                flipCard.addEventListener('click', function (e) {
-                    if (!flipCard.classList.contains('flipped')) {
-                        flipCard.classList.add('flipped');
-                        traerDetallesPokemon(pokemon.url)
-                            .then(data => {
-                                const tipos = data.types.map(t => t.type.name).join(', ');
-                                const alturaEnMetros = (data.height / 10).toFixed(1);
-                                const pesoEnKg = (data.weight / 10).toFixed(1);
-                                
-                                flipInner.querySelector('.flip-card-back').innerHTML = `
-                                    <img src="${data.sprites.front_default}" alt="${data.name}" class="pokemon-img mb-2">
-                                    <strong>${data.name.charAt(0).toUpperCase() + data.name.slice(1)}</strong>
-                                    <small>ID: ${data.id}</small>
-                                    <small>Altura: ${alturaEnMetros} m</small>
-                                    <small>Peso: ${pesoEnKg} kg</small>
-                                    <small>Tipos: ${tipos}</small>
-                                `;
-                            })
-                            .catch(() => {
-                                flipInner.querySelector('.flip-card-back').innerHTML =
-                                    `<div class="alert alert-danger">No se pudo cargar la información.</div>`;
-                            });
-                    } else {
-                        flipCard.classList.remove('flipped');
-                    }
-                });
-                lista.appendChild(col);
-            });
-        }
+                </div>
+            </div>
+        </div>
+    </div>
 
-        function mostrarPaginacion() {
-            const paginacion = document.getElementById('pagination');
-            paginacion.innerHTML = '';
-            
-            const anterior = document.createElement('li');
-            anterior.className = `page-item${paginaActual === 1 ? ' disabled' : ''}`;
-            anterior.innerHTML = `<a class="page-link" href="#" title="Página anterior">‹ Anterior</a>`;
-            anterior.onclick = e => { 
-                e.preventDefault(); 
-                if (paginaActual > 1) irAPagina(paginaActual - 1); 
-            };
-            paginacion.appendChild(anterior);
+    <!-- Footer -->
+    <div class="footer">
+        <div class="container">
+            <p>
+                <i class="fas fa-heart text-danger me-2"></i>
+                Desarrollado por Kevin Zúñiga | Diagnóstico 10mo Cuatrimestre
+            </p>
+            <p class="small">
+                <i class="fab fa-github me-2"></i>
+                <a href="https://github.com/KevinZuniga12" class="text-white">GitHub: KevinZuniga12</a>
+            </p>
+        </div>
+    </div>
 
-            const infoPage = document.createElement('li');
-            infoPage.className = 'page-item active';
-            infoPage.innerHTML = `<span class="page-link bg-primary border-primary">Página ${paginaActual} de ${totalPaginas}</span>`;
-            paginacion.appendChild(infoPage);
-
-            const siguiente = document.createElement('li');
-            siguiente.className = `page-item${paginaActual === totalPaginas ? ' disabled' : ''}`;
-            siguiente.innerHTML = `<a class="page-link" href="#" title="Página siguiente">Siguiente ›</a>`;
-            siguiente.onclick = e => { 
-                e.preventDefault(); 
-                if (paginaActual < totalPaginas) irAPagina(paginaActual + 1); 
-            };
-            paginacion.appendChild(siguiente);
-        }
-
-        function irAPagina(pagina) {
-            paginaActual = pagina;
-            traerPokemones(pagina)
-                .then(data => {
-                    mostrarPokemones(data.results);
-                    mostrarPaginacion();
-                    document.getElementById('pokemon-details').innerHTML = '';
-                });
-        }
-
-        traerPokemones(1).then(data => {
-            totalPaginas = Math.ceil(data.count / cuantosPorPagina);
-            mostrarPokemones(data.results);
-            mostrarPaginacion();
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
