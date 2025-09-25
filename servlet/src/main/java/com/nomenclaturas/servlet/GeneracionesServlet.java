@@ -30,8 +30,11 @@ public class GeneracionesServlet extends HttpServlet {
         nomenclaturas.add(new Nomenclatura(2, 1, 8, "SA"));
         nomenclaturas.add(new Nomenclatura(3, 1, 9, "DE"));
         nomenclaturas.add(new Nomenclatura(4, 1, 10, "AU"));
-        nomenclaturas.add(new Nomenclatura(5, 2, 15, "BE"));
-        nomenclaturas.add(new Nomenclatura(6, 2, 20, "GH"));
+        nomenclaturas.add(new Nomenclatura(1, 2, 5, "NA"));
+        nomenclaturas.add(new Nomenclatura(6, 2, 7, "DP"));
+        nomenclaturas.add(new Nomenclatura(2, 2, 8, "SA"));
+        nomenclaturas.add(new Nomenclatura(3, 2, 9, "DE"));
+        nomenclaturas.add(new Nomenclatura(4, 2, 10, "AU"));
     }
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
