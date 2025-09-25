@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #101f13 0%, #193d21 100%);
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -29,16 +29,18 @@
             opacity: 0.9;
         }
         .projects-section {
-            padding: 60px 0;
+            padding: 80px 0;
         }
         .project-card {
             background: white;
             border-radius: 15px;
             padding: 2rem;
-            margin-bottom: 2rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             border: none;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
         .project-card:hover {
             transform: translateY(-5px);
@@ -47,7 +49,7 @@
         .project-icon {
             font-size: 3rem;
             margin-bottom: 1rem;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #ea6666, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -62,9 +64,10 @@
             color: #666;
             margin-bottom: 1.5rem;
             line-height: 1.6;
+            flex-grow: 1;
         }
         .btn-project {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #303136, #214928);
             border: none;
             padding: 12px 30px;
             border-radius: 25px;
@@ -107,14 +110,24 @@
     <!-- Projects Section -->
     <div class="projects-section">
         <div class="container">
-            <div class="row">
+            <div class="row mb-5">
+                <div class="col-12 text-center">
+                    <h2 class="display-4 text-white mb-3">
+                        <i class="fas fa-laptop-code me-3"></i>Mis Proyectos
+                    </h2>
+                    <p class="lead text-white opacity-75 mb-5">
+                        Explora mis trabajos de desarrollo web
+                    </p>
+                </div>
+            </div>
+            <div class="row justify-content-center">
                 <!-- Proyecto Pokémon -->
-                <div class="col-lg-6 col-md-12">
-                    <div class="project-card text-center">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="project-card text-center h-100">
                         <div class="project-icon">
                             <i class="fas fa-dragon"></i>
                         </div>
-                        <h3 class="project-title">00 - Diagnostico </h3>
+                        <h3 class="project-title">00 - Diagnostico</h3>
                         <p class="project-description">
                             Una aplicación web moderna que muestra información detallada de Pokémon con tarjetas interactivas, efectos flip y navegación por páginas.
                         </p>
@@ -125,16 +138,32 @@
                 </div>
 
                 <!-- Proyecto Callback -->
-                <div class="col-lg-6 col-md-12">
-                    <div class="project-card text-center">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="project-card text-center h-100">
                         <div class="project-icon">
                             <i class="fas fa-sync-alt"></i>
                         </div>
                         <h3 class="project-title">Callbacks</h3>
                         <p class="project-description">
-                            Demostración práctica de callbacks en JavaScript, mostrando conceptos de programación asíncrona y manejo de eventos.
+                            Demostración práctica de callbacks en JavaScript, mostrando conceptos de programación asíncrona.
                         </p>
                         <a href="Callback.html" class="btn-project">
+                            <i class="fas fa-eye me-2"></i>Ver Proyecto
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Proyecto Servlet -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="project-card text-center h-100">
+                        <div class="project-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h3 class="project-title">Nomenclaturas</h3>
+                        <p class="project-description">
+                            Aplicación web con Servlet y JSP para gestionar nomenclaturas por generación con interfaz sincrónica.
+                        </p>
+                        <a href="http://localhost:8080/nomenclaturas/generaciones" class="btn-project" target="_blank">
                             <i class="fas fa-eye me-2"></i>Ver Proyecto
                         </a>
                     </div>
