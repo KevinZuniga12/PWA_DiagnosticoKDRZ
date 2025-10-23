@@ -1,12 +1,32 @@
-if('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js')
+        console.log('[Main] Registering Service Worker...');
+        
+        navigator.serviceWorker.register('./sw.js')
         .then(function(registration) {
-          console.log('Service Worker registered with scope:', registration.scope);
+            console.log('[Main] SW registered successfully:', registration.scope);
+            
+            setTimeout(() => {
+                caches.keys().then(cacheNames => {
+                    console.log('[Main] Available caches:', cacheNames);
+                    cacheNames.forEach(cacheName => {
+                        caches.open(cacheName).then(cache => {
+                            cache.keys().then(requests => {
+                                console.log(`[Main] ${cacheName} contains:`, requests.length, 'items');
+                            });
+                        });
+                    });
+                });
+            }, 1000);
         })
         .catch(function(error) {
-          console.log('Service Worker registration failed:', error);
+            console.error('[Main] SW registration failed:', error);
         });
     });
-  
+    
+    navigator.serviceWorker.ready.then(registration => {
+        console.log('[Main] SW is ready and active');
+    });
+} else {
+    console.warn('[Main] Service Workers not supported');
 }
