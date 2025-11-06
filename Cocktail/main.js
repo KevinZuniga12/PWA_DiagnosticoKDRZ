@@ -1,184 +1,112 @@
-// Service Worker
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Service Worker registered', reg))
-            .catch(err => console.log('Service Worker not registered', err))
-    })
-}
+// Cocktail Finder PWA - Main JavaScript
 
-// API
-const API_URL = 'https://www.thecocktaildb.com/api/json/v1/1';
-
-// DOM Elements
-const searchInput = document.getElementById('searchInput');
-const searchBtn = document.getElementById('searchBtn');
-const cocktailsGrid = document.getElementById('cocktailsGrid');
-const loading = document.getElementById('loading');
-const errorMessage = document.getElementById('errorMessage');
-
-// Event Listeners
-searchBtn.addEventListener('click', searchCocktails);
-searchInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') searchCocktails();
-});
-
-// Buscar cócteles
-async function searchCocktails() {
-    const searchTerm = searchInput.value.trim();
-    if (!searchTerm) {
-        alert('Ingresa un término de búsqueda');
-        return;
-    }
-
-    loading.classList.remove('d-none');
-    errorMessage.classList.add('d-none');
-    cocktailsGrid.innerHTML = '';
-
-    try {
-        const response = await fetch(`${API_URL}/search.php?s=${searchTerm}`);
-
-        // Verificar si la respuesta es válida
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-
-        loading.classList.add('d-none');
-
-        if (data.drinks) {
-            displayCocktails(data.drinks);
-        } else {
-            showFallbackMessage('No se encontraron cócteles con ese nombre');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        loading.classList.add('d-none');
-        // Mostrar cards de error en lugar de mensaje simple
-        displayErrorCards();
-    }
-}
-
-// Mostrar mensaje de fallback
-function showFallbackMessage(message) {
-    errorMessage.textContent = message;
-    errorMessage.classList.remove('d-none');
-}
-
-// Mostrar cards de error cuando no hay conexión
-function displayErrorCards() {
-    cocktailsGrid.innerHTML = '';
-    
-    // Crear 3 cards de error para mantener el diseño
-    for (let i = 0; i < 1; i++) {
-        const errorCard = createErrorCard();
-        cocktailsGrid.appendChild(errorCard);
-    }
-}
-
-// Mostrar cócteles
-function displayCocktails(drinks) {
-    cocktailsGrid.innerHTML = '';
-    drinks.forEach(drink => {
-        const card = createCard(drink);
-        cocktailsGrid.appendChild(card);
+// Registrar el Service Worker
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker
+            .register("/sw.js")
+            .then((registration) => {
+                console.log("Service Worker registrado con éxito:", registration.scope);
+            })
+            .catch((error) => {
+                console.log("Fallo el registro del Service Worker:", error);
+            });
     });
 }
 
-// Crear card
-function createCard(drink) {
-    const col = document.createElement('div');
-    col.className = 'col-md-4 mb-4';
+// Esperar a que el DOM esté cargado
+document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.getElementById("searchInput");
+    const searchButton = document.getElementById("searchButton");
+    const resultsContainer = document.getElementById("resultsContainer");
+    const loadingState = document.getElementById("loadingState");
 
-    const ingredients = getIngredients(drink);
+    // Función para mostrar el estado de carga
+    const showLoading = () => {
+        loadingState.classList.remove("hidden");
+        resultsContainer.classList.add("hidden");
+    };
 
-    col.innerHTML = `
-        <div class="card h-100">
-            <img src="${drink.strDrinkThumb}" class="card-img-top" alt="${drink.strDrink}">
-            <div class="card-body">
-                <h5 class="card-title">${drink.strDrink}</h5>
-                <p class="card-text">
-                    <span class="badge bg-info">${drink.strCategory}</span>
-                    <span class="badge bg-secondary">${drink.strAlcoholic}</span>
-                </p>
-                <p><strong>Copa:</strong> ${drink.strGlass}</p>
-                <p><strong>Ingredientes:</strong><br>${ingredients.join(', ')}</p>
+    // Función para ocultar el estado de carga
+    const hideLoading = () => {
+        loadingState.classList.add("hidden");
+        resultsContainer.classList.remove("hidden");
+    };
+
+    // Función para crear una tarjeta de bebida
+    const createDrinkCard = (drink) => {
+        const card = document.createElement("div");
+        card.className =
+            "bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300";
+
+        card.innerHTML = `
+            <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}" class="w-full h-48 object-cover">
+            <div class="p-4">
+                <h3 class="text-lg font-semibold text-gray-800 truncate">${drink.strDrink}</h3>
             </div>
-        </div>
-    `;
+        `;
+        return card;
+    };
 
-    return col;
-}
+    // Función para mostrar los resultados
+    const displayResults = (data) => {
+        resultsContainer.innerHTML = "";
 
-// Crear card de error (sin conexión)
-function createErrorCard() {
-    const col = document.createElement('div');
-    col.className = 'col-md-4 mb-4';
-
-    col.innerHTML = `
-        <div class="card h-100 border-danger">
-            <img src="error.jpg" 
-                 class="card-img-top" 
-                 alt="Error de conexión"
-                 style="background-color: #f8f9fa; height: 250px; object-fit: cover;">
-            <div class="card-body text-center">
-                <h5 class="card-title text-danger">
-                    📡❌
-                    <br>Sin Conexión a Internet
-                </h5>
-                <p class="card-text">
-                    <span class="badge bg-danger">Offline</span>
-                </p>
-                <p class="mt-3">
-                    <strong>No se puede cargar el contenido</strong>
-                    <br>
-                    <small class="text-muted">
-                        Verifica tu conexión a internet e intenta nuevamente
-                    </small>
-                </p>
-            </div>
-        </div>
-    `;
-
-    return col;
-}
-
-// Obtener ingredientes
-function getIngredients(drink) {
-    const ingredients = [];
-    for (let i = 1; i <= 15; i++) {
-        const ingredient = drink[`strIngredient${i}`];
-        const measure = drink[`strMeasure${i}`];
-        if (ingredient) {
-            ingredients.push(measure ? `${measure} ${ingredient}` : ingredient);
-        }
-    }
-    return ingredients;
-}
-
-// Cargar cócteles iniciales
-window.addEventListener('load', async () => {
-    loading.classList.remove('d-none');
-    try {
-        const response = await fetch(`${API_URL}/search.php?s=margarita`);
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        loading.classList.add('d-none');
-
-        if (data.drinks) {
-            displayCocktails(data.drinks);
+        if (data.drinks && data.drinks.length > 0) {
+            data.drinks.forEach((drink) => {
+                const card = createDrinkCard(drink);
+                resultsContainer.appendChild(card);
+            });
         } else {
-            showFallbackMessage('No se pudieron cargar los cócteles iniciales');
+            resultsContainer.innerHTML = `
+                <div class="col-span-full text-center text-gray-600 py-8">
+                    No se encontraron bebidas con ese nombre
+                </div>
+            `;
         }
-    } catch (error) {
-        console.error('Error:', error);
-        loading.classList.add('d-none');
-        // Mostrar cards de error en lugar de mensaje
-        displayErrorCards();
+        hideLoading();
+    };
+
+    // Función para realizar la búsqueda
+    const performSearch = async (searchTerm) => {
+        if (!searchTerm.trim()) return;
+
+        try {
+            showLoading();
+            const url = `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${encodeURIComponent(
+                searchTerm
+            )}`;
+
+            // La petición pasará por el Service Worker automáticamente
+            const response = await fetch(url);
+            const data = await response.json();
+
+            // Verificar si es una respuesta offline del service worker
+            if (response.headers.get("X-Offline-Response") === "true") {
+                console.log("Respuesta offline del Service Worker");
+            }
+
+            displayResults(data);
+        } catch (error) {
+            console.error("Error en la búsqueda:", error);
+            hideLoading();
+        }
+    };
+
+    // Manejador de evento para el botón de búsqueda
+    searchButton.addEventListener("click", () => {
+        performSearch(searchInput.value);
+    });
+
+    // Manejador de evento para la tecla Enter en el input
+    searchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            performSearch(searchInput.value);
+        }
+    });
+
+    // Verificar si hay un Service Worker activo
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        console.log("Service Worker está activo y controlando la página");
     }
 });
